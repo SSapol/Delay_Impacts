@@ -68,7 +68,7 @@ ggplot(iraq_reg, aes(x = iraq_Xtminus1, y = iraq_Xt)) +
 
 
 ####  Simulation ####
-simruns  <- function(M, EE, unc, flex, design, delay) {
+simruns  <- function(M, EE, unc, flex, design, armor2designpercentage, armor3designpercentage, delay) {
   
   ####  Simulation Initial Conditions  ####  
   set.seed(100)
@@ -226,11 +226,11 @@ M   <- 10000
 ####Run Simulation for 6 Scenarios######
 #function(M, EE, unc, flex, design, delay)
 
-baseruns                           <- simruns(M, eff, 0, 0, 0, 0)
-uncertaintyruns                    <- simruns(M, eff, 1, 0, 0, 0)
-flexibleruns                       <- simruns(M, eff, 1, 1, 1, 0)
-delay6                             <- simruns(M, eff, 1, 1, 1, 6)
-delay12                            <- simruns(M, eff, 1, 1, 1, 12)
+baseruns                           <- simruns(M, eff, 0, 0, 0, 0, 0, 0)
+uncertaintyruns                    <- simruns(M, eff, 1, 0, 0, 0, 0, 0)
+flexibleruns                       <- simruns(M, eff, 1, 1, 1, .25, 5, 0)
+delay6                             <- simruns(M, eff, 1, 1, 1, .25, 5, 6)
+delay12                            <- simruns(M, eff, 1, 1, 1, .25, 5, 12)
 
 #Label with Scenario Name
 baseruns$scenario                  <- "Base"
@@ -249,35 +249,7 @@ results$scenario                   <- factor(results$scenario, levels = c("Base"
 totalvehicles                      <- 1000
 results$ENPC                       <- results$ENPC * totalvehicles
 
-#Create Baseline Table Data
-baseresultstable                   <- subset(results, scenario == "Base")
-baseresultstable$ArmorType         <- c("Standard", "Passive", "Reactive", "Robust")
-baseresultstable$armortype         <- NULL
-baseresultstable$scenario          <- NULL
-baseresultstable                   <- baseresultstable[, c(2, 1)]
-baseminENPC                        <- min(baseresultstable$ENPC)
-baseresultstable$Difference        <- baseresultstable$ENPC - baseminENPC 
-baseresultstable$ENPC              <- format(round(baseresultstable$ENPC, 0), format = "d", big.mark=",")
-baseresultstable$Difference        <- format(round(baseresultstable$Difference, 0), format = "d", big.mark=",") 
 
-#Print Baseline Table 
-<<<<<<< HEAD
-table1 <- formattable(baseresultstable, align =c("l","c","c"), list(
-  =======
-    formattable(baseresultstable, align =c("l","c","c"), list(
-      >>>>>>> 09616a6563fe2aa7e6eff6f9e4f5645c576c4997
-      `ArmorType` = formatter("span", style = ~ style(color = ifelse(ENPC == min(ENPC), "black", "grey"), 
-                                                      font.weight = ifelse(ENPC == min(ENPC), "bold", ""))),
-      `ENPC`= formatter("span", style = ~ style(color = ifelse(ENPC == min(ENPC), "black", "grey"), 
-                                                font.weight = ifelse(ENPC == min(ENPC), "bold", ""))),
-      'Difference' = formatter("span", style = ~ style(color = ifelse(ENPC == min(ENPC), "black", "grey"), 
-                                                       font.weight = ifelse(ENPC == min(ENPC), "bold", "")))))
-  
-  <<<<<<< HEAD
-  table1
-  =======
-    >>>>>>> 09616a6563fe2aa7e6eff6f9e4f5645c576c4997
-  
   #Standardize y-axis for graphs
   ylim1 <- 5500
   ylim2 <- 5800
@@ -331,6 +303,4 @@ table1 <- formattable(baseresultstable, align =c("l","c","c"), list(
   #Plot all togther 
   grid.arrange(Base_v_Uncertainty, Uncertainty_v_Flexibility, ImpactOfDelays, ncol = 3)
   
-  
-  ####Sensitivity Analysis####
   
