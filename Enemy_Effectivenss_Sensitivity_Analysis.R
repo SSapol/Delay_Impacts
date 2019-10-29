@@ -44,3 +44,5 @@ eeplot <- ggplot(subset(sens_results, armortype == 2 | armortype == 3), aes(x = 
   scale_color_grey(end = .5) + 
   facet_grid(~EnemyEffectivenss) +
   ylim(0, 1000) 
+
+eeplot

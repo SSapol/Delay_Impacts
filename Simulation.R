@@ -89,8 +89,8 @@ simruns  <- function(M, EE, unc, flex, design, armor2designpercentage, armor3des
   armor4cost                     <- 5                                  #Purchase Cost for Robust Armor
   
   #Design Costs# 
-  armor2designpercentage         <- .25                                                             #Percent Cost of design for Passive Armor  (Hook Cost)
-  armor3designpercentage         <- .5                                                             #Percent Cost of design for Reactive Armor (Hook Cost)
+  # armor2designpercentage         <- .25                                                             #Percent Cost of design for Passive Armor  (Hook Cost)
+  # armor3designpercentage         <- .5                                                             #Percent Cost of design for Reactive Armor (Hook Cost)
   armor2design                   <- design * (armor2cost - armor1cost) * armor2designpercentage    #Design Cost for Passive Armor
   armor3design                   <- design * (armor3cost - armor1cost) * armor3designpercentage    #Design Cost for Reactive Armor
   
@@ -228,9 +228,9 @@ M   <- 10000
 
 baseruns                           <- simruns(M, eff, 0, 0, 0, 0, 0, 0)
 uncertaintyruns                    <- simruns(M, eff, 1, 0, 0, 0, 0, 0)
-flexibleruns                       <- simruns(M, eff, 1, 1, 1, .25, 5, 0)
-delay6                             <- simruns(M, eff, 1, 1, 1, .25, 5, 6)
-delay12                            <- simruns(M, eff, 1, 1, 1, .25, 5, 12)
+flexibleruns                       <- simruns(M, eff, 1, 1, 1, .25, .5, 0)
+delay6                             <- simruns(M, eff, 1, 1, 1, .25, .5, 6)
+delay12                            <- simruns(M, eff, 1, 1, 1, .25, .5, 12)
 
 #Label with Scenario Name
 baseruns$scenario                  <- "Base"
@@ -264,8 +264,8 @@ results$ENPC                       <- results$ENPC * totalvehicles
     theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) + 
     labs(x = "Scenario", y = "Expected Net Present Cost ($M)", face = "bold") + 
     theme(legend.position="none") + 
-    scale_color_grey(end = .5) #+
-  #ylim(ylim1, ylim2)
+    scale_color_grey(end = .5) +
+    ylim(ylim1, ylim2)
   
   Base_v_Uncertainty
   
@@ -280,8 +280,8 @@ results$ENPC                       <- results$ENPC * totalvehicles
     theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) + 
     labs(x = "Scenario", y = "Expected Net Present Cost ($M)", face = "bold") + 
     theme(legend.position="none") + 
-    scale_color_grey(end = .5) #+
-  #ylim(ylim1, ylim2)
+    scale_color_grey(end = .5) +
+    ylim(ylim1, ylim2)
   
   Uncertainty_v_Flexibility
   
@@ -295,8 +295,8 @@ results$ENPC                       <- results$ENPC * totalvehicles
     theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) + 
     labs(x = "Scenario", y = "Expected Net Present Cost ($M)", face = "bold") + 
     theme(legend.position="none") + 
-    scale_color_grey(end = .5) #+
-  #ylim(ylim1, ylim2)
+    scale_color_grey(end = .5) +
+    ylim(ylim1, ylim2)
   
   ImpactOfDelays
   
