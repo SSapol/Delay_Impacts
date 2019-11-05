@@ -68,7 +68,7 @@ ggplot(iraq_reg, aes(x = iraq_Xtminus1, y = iraq_Xt)) +
 
 
 ####  Simulation ####
-simruns  <- function(M, EE, unc, flex, design, armor2designpercentage, armor3designpercentage, delay) {
+simruns  <- function(M, EE, unc, flex, design, armor2designpercentage, armor3designpercentage, LSCOPercentage, CRLCOPercentage, MESCDPercentage, delay) {
   
   ####  Simulation Initial Conditions  ####  
   set.seed(100)
@@ -108,8 +108,8 @@ simruns  <- function(M, EE, unc, flex, design, armor2designpercentage, armor3des
   df                             <- data.frame(indexnumber, run, month, armortype, missiontypeRV, bogdwellRV)
   
   #### Mission Type Assignments ####
-  df$missiontype                 <- ifelse(df$missiontypeRV <= 1/3, 1,                   #Assigns Mission Type of LSCO (1) with probability of 1/3 
-                                           ifelse(df$missiontypeRV <= 2/3, 2,            #Assigns Mission Type of CRLCO (2) with probability of 1/3 
+  df$missiontype                 <- ifelse(df$missiontypeRV <= LSCOPercentage, 1,                   #Assigns Mission Type of LSCO (1) with probability of 1/3 
+                                           ifelse(df$missiontypeRV <= LSCOPercentage + CRLCOPercentage, 2,            #Assigns Mission Type of CRLCO (2) with probability of 1/3 
                                                   ifelse(df$missiontypeRV <= 1, 3,4)))   #Assigns Mission Type of MEDCL (3) with probability of 1/3 
   
   #### Bogdwell assignments ####
@@ -224,13 +224,12 @@ eff <- .25
 M   <- 10000
 
 ####Run Simulation for 6 Scenarios######
-#function(M, EE, unc, flex, design, delay)
 
-baseruns                           <- simruns(M, eff, 0, 0, 0, 0, 0, 0)
-uncertaintyruns                    <- simruns(M, eff, 1, 0, 0, 0, 0, 0)
-flexibleruns                       <- simruns(M, eff, 1, 1, 1, .25, .5, 0)
-delay6                             <- simruns(M, eff, 1, 1, 1, .25, .5, 6)
-delay12                            <- simruns(M, eff, 1, 1, 1, .25, .5, 12)
+baseruns                           <- simruns(M, eff, 0, 0, 0, .25, .5, 1/3, 1/3, 1/3, 0)
+uncertaintyruns                    <- simruns(M, eff, 1, 0, 0, .25, .5, 1/3, 1/3, 1/3, 0)
+flexibleruns                       <- simruns(M, eff, 1, 1, 1, .25, .5, 1/3, 1/3, 1/3, 0)
+delay6                             <- simruns(M, eff, 1, 1, 1, .25, .5, 1/3, 1/3, 1/3, 6)
+delay12                            <- simruns(M, eff, 1, 1, 1, .25, .5, 1/3, 1/3, 1/3, 12)
 
 #Label with Scenario Name
 baseruns$scenario                  <- "Base"
@@ -252,7 +251,7 @@ results$ENPC                       <- results$ENPC * totalvehicles
 
   #Standardize y-axis for graphs
   ylim1 <- 5500
-  ylim2 <- 5800
+  ylim2 <- 5900
   
   #Plot Base vs. Uncertainty
   Base_v_Uncertainty <- 
