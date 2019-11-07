@@ -36,5 +36,5 @@ results
 ####Plot Results####
 ggplot(results, aes(x = as.factor(Delay), y = ENPC, group = group, linetype = as.factor(armor2per))) + 
   geom_line() + 
-  theme(legend.position="none") + 
+  #theme(legend.position="none") + 
   facet_grid(~ armortype)
