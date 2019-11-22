@@ -2,7 +2,7 @@
 
 ####Create DOE Matrix####
 Run         <- 1:15
-M           <- rep(10000, 15)
+M           <- rep(100, 15)
 EE          <- rep(.25, 15)
 uncert      <- rep(1, 15)
 flexible    <- rep(1, 15)
@@ -34,7 +34,9 @@ results       <- left_join(results, DOE, by = c("Run", "Delay"))
 results
 
 ####Plot Results####
-ggplot(results, aes(x = as.factor(Delay), y = ENPC, group = group, linetype = as.factor(armor2per))) + 
+DesignCostSA <- ggplot(results, aes(x = as.factor(Delay), y = ENPC, group = group, linetype = as.factor(armor2per))) + 
   geom_line() + 
   #theme(legend.position="none") + 
-  facet_grid(~ armortype)
+  facet_grid(armor2per ~ armor3per)
+
+DesignCostSA

@@ -34,7 +34,7 @@ results$Delay           <- rep(c(0, 6, 12), each = 24)
 results$Scenario        <- rep(c("Flexibility", "6 Month Delay", "12 Month Delay"), each = 24)
 results$group           <- rep(1:24, 3)
 results                 <- left_join(results, DOE, by = c("Run", "Delay"))
-ArmorNames              <- data.frame(1:4, c("Standard", "Passive", "Reactive", "Robust")) 
+ArmorNames              <- data.frame(1:4, c("Standard", "Simple", "Advanced", "Robust")) 
 names(ArmorNames)       <- c("armortype", "Armor")
 results                 <- left_join(results, ArmorNames, by = c("armortype"))
 results$Label           <- ifelse(results$Delay == 12 & results$LSCOOption == 1 & results$CRLCOOption == 0 & results$MESCD == 0, as.character(results$Armor), "")
@@ -46,7 +46,7 @@ results$Scenario        <- factor(results$Scenario, levels = c("Flexibility", "6
 
 
 ####Plot Results####
-ggplot(results, aes(x = Scenario, y = TENPC, group = group, linetype = as.factor(armortype), color = as.factor(armortype), label = Label)) + 
+ScenarioSA <- ggplot(results, aes(x = Scenario, y = TENPC, group = group, linetype = as.factor(armortype), color = as.factor(armortype), label = Label)) + 
   geom_line(aes(color = as.factor(armortype), linetype = as.factor(armortype)), size = 1 ) + 
   labs(x = "Scenario", y = "Total Expected Net Present Cost ($M)", face = "bold", size = .5) +
   geom_text(size = 3, position = position_nudge(x = 0.3)) + 
@@ -55,3 +55,4 @@ ggplot(results, aes(x = Scenario, y = TENPC, group = group, linetype = as.factor
   theme(legend.position="none") + 
   facet_grid(~ LSCOOptionText + CRLCOOptionText + MESCDOptionText) 
 
+ScenarioSA

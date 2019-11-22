@@ -34,11 +34,12 @@ results       <- left_join(results, DOE, by = c("Run", "Delay"))
 results
 
 ####Plot Results####
-ggplot(results, aes(x = as.factor(Delay), y = ENPC, group = group, linetype = as.factor(EE))) + 
+EESA <- ggplot(results, aes(x = as.factor(Delay), y = ENPC, group = group, linetype = as.factor(EE))) + 
   geom_line() + 
   theme(legend.position="none") + 
   facet_grid(~ armortype)
 
+EESA
 
 
 

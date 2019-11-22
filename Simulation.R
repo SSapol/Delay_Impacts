@@ -4,6 +4,9 @@ library(ggplot2)
 library(data.table)
 library(tidyverse)
 library(gridExtra)
+library(wesanderson)
+library(RColorBrewer)
+library(ggsci)
 
 ####  Iraq Historical Data ####
 iraq_months            <- c(1:40)                                                   # Number of months of data
@@ -28,7 +31,7 @@ ggplot(df_iraqattacks, aes(x = as.Date(iraq_dates), y = iraq_attackspervehicle))
   geom_hline(yintercept = iraq_meanattacks, color = "red", linetype = 2, alpha = .5) + 
   annotate("text", x = as.Date("2007/11/15"), y = .12, label = "Attacks/Vehicle") + 
   annotate("text", x = as.Date("2005/8/15"), y = .09, label = "Mean Attacks/Vehicle = .0842", color = "red") +
-  ggtitle('Iraq (2/2005 to 7/2008) - Attacks per Vehicle') + 
+  #ggtitle('Iraq (2/2005 to 7/2008) - Attacks per Vehicle') + 
   theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) + 
   labs(x = "Month", y = "Attacks per Vehicle", face = "bold") + 
   theme(legend.position="none") + 
@@ -64,16 +67,13 @@ ggplot(iraq_reg, aes(x = iraq_Xtminus1, y = iraq_Xt)) +
   annotate("text", x = .105, y = .09, label = "R-Squared = 98.96%") + 
   theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) 
 
-
-
-
 ####  Simulation ####
 simruns  <- function(M, EE, unc, flex, design, armor2designpercentage, armor3designpercentage, LSCOPercentage, CRLCOPercentage, MESCDPercentage, delay) {
   
   ####  Simulation Initial Conditions  ####  
   set.seed(100)
   totalrvneeded                  <- M*132*4                            #Total number of unique random variables needed (total lines)
-  discountrate                   <- .021                                #discount rate used
+  discountrate                   <- .021                               #discount rate used
   totalruns                      <- M*4                                #Total runs M runs per each armor type (ex. M = 100, 400 total runs or 100 runs for each armor type)
   indexnumber                    <- 1:totalrvneeded                    #Used to index each indivdiual time period
   run                            <- rep(1:totalruns, each = 132)       #Indexes by run 
@@ -163,7 +163,7 @@ simruns  <- function(M, EE, unc, flex, design, armor2designpercentage, armor3des
                                            ifelse(df$monthlyattacks > 0.00, 1, 0))                         #Upgrade criteria, currently if > 0.
   df$samerun                     <- ifelse(df$run == 1 & df$month == 1, 0,                                 #Ensures calculations on the same run
                                            ifelse(df$run == shift(df$run, 1L, type = "lag"), 1, 0))
-  df$decisiondelay               <- shift(df$upgradecriteria, delay, type = "lag")                         #Delay built into system (Part of function)
+  df$decisiondelay               <- ifelse(df$month <= delay, 0, shift(df$upgradecriteria, delay, type = "lag"))   #Delay built into system (Part of function)
   df$upgrade                     <- ifelse(df$month <= 12, 0, df$decisiondelay * df$samerun * flex)        #Decision to upgrade based
   df[, upgraded := cumsum(upgrade), by=list(run)]                                                          #Determines if upgrade has been performed (if>=1)
   df$upgraded                    <- df$upgraded
@@ -203,6 +203,8 @@ simruns  <- function(M, EE, unc, flex, design, armor2designpercentage, armor3des
                                                      ifelse(df$armortype == 3, armor3cost - armor1cost - design * armor3design, 0))
   df$presentcost                 <- df$purchasecost + df$replacementcost/(1+discountrate/12)^month + df$callcost/(1+discountrate/12)^month
   
+  df <- df
+  
   #### Outputs ####
   runsummary   <- df %>%
     select(armortype, run, presentcost) %>%
@@ -214,92 +216,10 @@ simruns  <- function(M, EE, unc, flex, design, armor2designpercentage, armor3des
     group_by(armortype)   %>%
     summarise(ENPC = mean(NPC))
   
-  out <- armorsummary
   
+  out  <- armorsummary
+
   return(out)
 }
 
-####Set Intial Condtiosn for Simulation####
-eff <- .25
-M   <- 10000
 
-####Run Simulation for 6 Scenarios######
-
-baseruns                           <- simruns(M, eff, 0, 0, 0, .25, .5, 1/3, 1/3, 1/3, 0)
-uncertaintyruns                    <- simruns(M, eff, 1, 0, 0, .25, .5, 1/3, 1/3, 1/3, 0)
-flexibleruns                       <- simruns(M, eff, 1, 1, 1, .25, .5, 1/3, 1/3, 1/3, 0)
-delay6                             <- simruns(M, eff, 1, 1, 1, .25, .5, 1/3, 1/3, 1/3, 6)
-delay12                            <- simruns(M, eff, 1, 1, 1, .25, .5, 1/3, 1/3, 1/3, 12)
-
-#Label with Scenario Name
-baseruns$scenario                  <- "Base"
-uncertaintyruns$scenario           <- "Uncertainty"
-flexibleruns$scenario              <- "Flexibility"
-delay6$scenario                    <- "6 Month Delay"
-delay12$scenario                   <- "12 Month Delay"
-
-#Merge results into single dataframe
-results                            <- as.data.frame(rbind(baseruns, uncertaintyruns, flexibleruns, delay6, delay12))
-
-#Reorder scenarios###
-results$scenario                   <- factor(results$scenario, levels = c("Base", "Uncertainty", "Flexibility", "Flex with Design", "6 Month Delay","12 Month Delay"))
-
-#Set total number of vehicles and develop total ENPC
-totalvehicles                      <- 1000
-results$TENPC                      <- results$ENPC * totalvehicles
-
-
-  #Standardize y-axis for graphs
-  ylim1 <- 5500
-  ylim2 <- 5900
-  
-  #Plot Base vs. Uncertainty
-  Base_v_Uncertainty <- 
-    ggplot(subset(results, (scenario == "Base" | scenario == "Uncertainty")), aes(x = scenario, y = TENPC, group = as.factor(armortype), color = as.factor(armortype), label = armortype, linetype = as.factor(armortype))) + 
-    geom_line(aes(color = as.factor(armortype)), size = 1) + 
-    geom_text(data = subset(results, scenario == "Uncertainty"), aes(color = as.factor(armortype), label = c("Standard", "", "Reactive", "Robust")),position = position_nudge(x = 0.15)) +
-    geom_text(data = subset(results, scenario == "Base"), aes(color = as.factor(armortype), label = c("", "Passive", "", "")),position = position_nudge(x = -0.15)) +
-    ggtitle('Base vs. Uncertainty') + 
-    theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) + 
-    labs(x = "Scenario", y = "Total Expected Net Present Cost ($M)", face = "bold") + 
-    theme(legend.position="none") + 
-    scale_color_grey(end = .5) +
-    ylim(ylim1, ylim2)
-  
-  Base_v_Uncertainty
-  
-  #Uncertainty vs. Flexibility
-  
-  Uncertainty_v_Flexibility <-
-    ggplot(subset(results, (scenario == "Uncertainty" | scenario == "Flexibility")), aes(x = scenario, y = TENPC, group = as.factor(armortype), color = as.factor(armortype), label = armortype, linetype = as.factor(armortype))) + 
-    geom_line(aes(color = as.factor(armortype)), size = 1) + 
-    geom_text(data = subset(results, scenario == "Flexibility"), aes(color = as.factor(armortype), label = c("Standard", "Passive", "Reactive", "Robust")),position = position_nudge(x = 0.15)) +
-    geom_text(data = subset(results, scenario == "Uncertainty"), aes(color = as.factor(armortype), label = c("", "", "", "")),position = position_nudge(x = -0.15)) +
-    ggtitle('Uncertainty vs. Flexibility') + 
-    theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) + 
-    labs(x = "Scenario", y = "Total Expected Net Present Cost ($M)", face = "bold") + 
-    theme(legend.position="none") + 
-    scale_color_grey(end = .5) +
-    ylim(ylim1, ylim2)
-  
-  Uncertainty_v_Flexibility
-  
-  #Plot the Impact of Delays
-  
-  ImpactOfDelays <- 
-    ggplot(subset(results, (scenario == "Flexibility" | scenario == "6 Month Delay"| scenario == "12 Month Delay" )), aes(x = scenario, y = TENPC, group = as.factor(armortype), color = as.factor(armortype), label = as.factor(armortype))) + 
-    geom_line(aes(color = as.factor(armortype), linetype = as.factor(armortype)), size = 1) + 
-    geom_text(data = subset(results, scenario == "12 Month Delay"), aes(color = as.factor(armortype), label = c("Standard", "Passive", "Reactive", "Robust")),position = position_nudge(x = 0.25)) + 
-    ggtitle('Impact of Delays') + 
-    theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) + 
-    labs(x = "Scenario", y = "Total Expected Net Present Cost ($M)", face = "bold") + 
-    theme(legend.position="none") + 
-    scale_color_grey(end = .5) +
-    ylim(ylim1, ylim2)
-  
-  ImpactOfDelays
-  
-  #Plot all togther 
-  grid.arrange(Base_v_Uncertainty, Uncertainty_v_Flexibility, ImpactOfDelays, ncol = 3)
-  
-  
