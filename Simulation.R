@@ -35,7 +35,16 @@ ggplot(df_iraqattacks, aes(x = as.Date(iraq_dates), y = iraq_attackspervehicle))
   theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) + 
   labs(x = "Month", y = "Attacks per Vehicle", face = "bold") + 
   theme(legend.position="none") + 
-  scale_color_grey(end = .5) 
+  scale_color_grey(end = .5) + 
+  theme(
+    panel.background = element_blank(),
+    # Hide panel borders and remove grid lines
+    panel.border = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    # Change axis line
+    axis.line = element_line(colour = "black")
+  )
 
 
 #Predictors
@@ -214,7 +223,7 @@ simruns  <- function(M, EE, unc, flex, design, armor2designpercentage, armor3des
   armorsummary <- runsummary %>%
     select(armortype, NPC) %>%
     group_by(armortype)   %>%
-    summarise(ENPC = mean(NPC))
+    summarise(ENPC = mean(NPC), SD = sd(NPC))
   
   
   out  <- armorsummary
