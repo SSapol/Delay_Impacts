@@ -49,22 +49,13 @@ results
 Base_v_Uncertainty <- 
   ggplot(subset(results, (scenario == "Base" | scenario == "Uncertainty")), aes(x = scenario, y = TENPC, group = as.factor(armortype), color = as.factor(armortype), label = armortype, linetype = as.factor(armortype))) + 
   geom_line(aes(color = as.factor(armortype)), size = 1) + 
-  geom_text(data = subset(results, scenario == "Uncertainty"), aes(color = as.factor(armortype), label = c("Standard", "", "Advanced", "Robust")),position = position_nudge(x = 0.2)) +
-  geom_text(data = subset(results, scenario == "Base"), aes(color = as.factor(armortype), label = c("", "Simple", "", "")),position = position_nudge(x = -0.2)) +
-  ggtitle('Baseline vs. Uncertainty') + 
-  theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) + 
+  geom_text(data = subset(results, scenario == "Uncertainty"), aes(color = as.factor(armortype), label = c("Standard", "", "Advanced", "Robust")),position = position_nudge(x = 0.25)) +
+  geom_text(data = subset(results, scenario == "Base"), aes(color = as.factor(armortype), label = c("", "Simple", "", "")),position = position_nudge(x = -0.25)) +
+  ggtitle('Baseline vs. Operational Uncertainty') + 
+  theme(plot.title = element_text(size = 12, face = "bold", hjust = 0.5)) + 
   labs(x = "Scenario", y = "Total Expected Net Present Cost ($M)", face = "bold") +
-  scale_color_grey(end = .5) +
+  scale_color_manual(values = wes_palette(n=4, name="Moonrise2")) +
   ylim(ylim1, ylim2) + 
-  theme(
-    panel.background = element_blank(),
-    # Hide panel borders and remove grid lines
-    panel.border = element_blank(),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    # Change axis line
-    axis.line = element_line(colour = "black")
-  ) + 
   theme(legend.position="none")  
 
 Base_v_Uncertainty
@@ -74,24 +65,14 @@ Base_v_Uncertainty
 Uncertainty_v_Flexibility <-
   ggplot(subset(results, (scenario == "Uncertainty" | scenario == "Flexibility")), aes(x = scenario, y = TENPC, group = as.factor(armortype), color = as.factor(armortype), label = armortype, linetype = as.factor(armortype))) + 
   geom_line(aes(color = as.factor(armortype)), size = 1) + 
-  geom_text(data = subset(results, scenario == "Flexibility"), aes(color = as.factor(armortype), label = c("Standard", "Simple", "", "Robust")),position = position_nudge(x = 0.2)) +
-  geom_text(data = subset(results, scenario == "Uncertainty"), aes(color = as.factor(armortype), label = c("", "", "Advanced", "")),position = position_nudge(x = -0.2)) +
-  ggtitle('Uncertainty vs. Flexibility') + 
-  theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) + 
+  geom_text(data = subset(results, scenario == "Flexibility"), aes(color = as.factor(armortype), label = c("Standard", "Simple", "", "Robust")),position = position_nudge(x = 0.25)) +
+  geom_text(data = subset(results, scenario == "Uncertainty"), aes(color = as.factor(armortype), label = c("", "", "Advanced", "")),position = position_nudge(x = -0.25)) +
+  ggtitle('Operational Uncertainty vs. Flexibility') + 
+  theme(plot.title = element_text(size = 12, face = "bold", hjust = 0.5)) + 
   labs(x = "Scenario", y = "Total Expected Net Present Cost ($M)", face = "bold") + 
   theme(legend.position="none") + 
-  scale_color_grey(end = .5) +
-  ylim(ylim1, ylim2) + 
-  theme(
-    panel.background = element_blank(),
-    # Hide panel borders and remove grid lines
-    panel.border = element_blank(),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    # Change axis line
-    axis.line = element_line(colour = "black")
-  )
-
+  scale_color_manual(values = wes_palette(n=4, name="Moonrise2")) +
+  ylim(ylim1, ylim2) 
 
 Uncertainty_v_Flexibility
 
@@ -100,23 +81,13 @@ Uncertainty_v_Flexibility
 ImpactOfDelays <- 
   ggplot(subset(results, (scenario == "Flexibility" | scenario == "6 Month Delay"| scenario == "12 Month Delay" )), aes(x = scenario, y = TENPC, group = as.factor(armortype), color = as.factor(armortype), label = as.factor(armortype))) + 
   geom_line(aes(color = as.factor(armortype), linetype = as.factor(armortype)), size = 1) + 
-  geom_text(data = subset(results, scenario == "12 Month Delay"), aes(color = as.factor(armortype), label = c("Standard", "Simple", "Advanced", "Robust")),position = position_nudge(x = 0.25)) + 
-  ggtitle('Impact of Delays') + 
-  theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) + 
+  geom_text(data = subset(results, scenario == "12 Month Delay"), aes(color = as.factor(armortype), label = c("Standard", "Simple", "Advanced", "Robust")),position = position_nudge(x = 0.3)) + 
+  ggtitle('Flexibility vs. Implementation Delays') + 
+  theme(plot.title = element_text(size = 12, face = "bold", hjust = 0.5)) + 
   labs(x = "Scenario", y = "Total Expected Net Present Cost ($M)", face = "bold") + 
   theme(legend.position="none") + 
-  scale_color_grey(end = .5) +
-  ylim(ylim1, ylim2) +
-  theme(
-    panel.background = element_blank(),
-    # Hide panel borders and remove grid lines
-    panel.border = element_blank(),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    # Change axis line
-    axis.line = element_line(colour = "black")
-  ) + 
-  theme(legend.position="none")  
+  scale_color_manual(values = wes_palette(n=4, name="Moonrise2")) +
+  ylim(ylim1, ylim2) 
 
 ImpactOfDelays
 

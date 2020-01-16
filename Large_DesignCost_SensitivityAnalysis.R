@@ -72,15 +72,17 @@ short3    <- short3[!is.na(short3$select), ]
 rownames(short3) <- NULL
 
 write.csv(short3, "large_DC_SA.csv")
+ 
+designcostplot <- read.csv("large_DC_SA.csv")
+designcostplot$Scenario <- factor(designcostplot$Scenario, levels = c("Uncertainty", "Flexibility", "3 Month", "6 Month", "9 Month", "12 Month"))
+designcostplot$Armor <- factor(designcostplot$Armor, levels = c("Standard", "Simple", "Advanced", "Robust"))
 
-plot <- read.csv("large_DC_SA.csv")
-plot$Scenario <- factor(plot$Scenario, levels = c("Uncertainty", "Flexibility", "3 Month", "6 Month", "9 Month", "12 Month"))
-plot$Armor <- factor(plot$Armor, levels = c("Standard", "Simple", "Advanced", "Robust"))
-
-
-ggplot(plot, aes(x = armor2per, y = armor3per, color = Armor, shape = Armor, fill = Armor)) + 
+ggplot(subset(designcostplot, Scenario != "Uncertainty"), aes(x = armor2per, y = armor3per, color = Armor, shape = Armor, fill = Armor)) + 
          geom_point(size = 4) + 
          scale_shape_manual(values = c(16, 17, 18)) +
-         scale_color_manual(values=c("#E69F00", "#56B4E9", "#009E73")) +
+         scale_color_manual(values=c("#C27D38", "#CCC591", "#29211F")) +
+         ggtitle('Option Cost Sensitivity Analysis') + 
+         theme(plot.title = element_text(size = 12, face = "bold", hjust = 0.5), legend.position = "bottom") + 
+         labs(x = "Simple Option Cost (% of armor cost)", y = "Adv. Option Cost (% of armor cost)", face = "bold") + 
          facet_wrap(facets = "Scenario", ncol = 6)
 

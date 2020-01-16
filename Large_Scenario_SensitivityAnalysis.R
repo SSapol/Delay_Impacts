@@ -29,7 +29,7 @@ DOE$TotalProb           <- DOE$LSCOOption + DOE$CRLCOOption + DOE$MESCDOption
 DOE                     <- subset(DOE, TotalProb == 1)
 DOE$Run                 <- 1:length(DOE$M)
 
-####Run DOE Matrix####
+####Run DOE Matrix#### 
 results     <- data.frame()
 for(i in 1:length(DOE$M)){
   df        <- simruns(DOE$M[i], DOE$EE[i], DOE$uncert[i], DOE$flexible[i], DOE$designcost[i], DOE$armor2per[i], DOE$armor3[i], DOE$LSCOOption[i], DOE$CRLCOOption[i], DOE$MESCDOption[i], DOE$Delay[i]) 
@@ -87,18 +87,21 @@ rownames(short3) <- NULL
 short3$tag <- paste(short3$LSCOOptionText, " ", short3$CRLCOOptionText, " ", short3$MESCDOptionText)
 short3$Armor <- factor(short3$Armor, levels = c("Standard", "Simple", "Advanced", "Robust"))
 
+write.csv(short3, "large_S_SA.csv")
 
-ggplot(short3, aes(x = Scenario)) + 
-  geom_histogram(stat = "count")+ 
-  theme(legend.position="none") + 
-  facet_wrap(facets = "Armor", ncol = 4)
+scenarioplot <- read.csv("large_S_SA.csv")
+scenarioplot$Scenario <- factor(scenarioplot$Scenario, levels = c("Uncertainty", "Flexibility", "3 Month Delay", "6 Month Delay", "9 Month Delay", "12 Month Delay"))
+scenarioplot$Armor <- factor(scenarioplot$Armor, levels = c("Standard", "Simple", "Advanced", "Robust"))
 
-ggplot(short3, aes(x = LSCOOption, y = CRLCOOption, color = Armor, shape = Armor, fill = Armor)) + 
+
+ggplot(scenarioplot, aes(x = LSCOOption, y = CRLCOOption, color = Armor, shape = Armor, fill = Armor)) + 
   geom_point(size = 4) +
   scale_shape_manual(values = c(15, 16, 17, 18)) +
-  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9", "#009E73")) +
+  scale_color_manual(values=c("#798E87", "#C27D38", "#CCC591", "#29211F")) +
   facet_wrap(facets = "Scenario", ncol = 6)
 
+
+#######
 library(tidyverse)
 change <- results
 
@@ -113,3 +116,4 @@ library(plotly)
 scenarioSA <- read.csv("C:/Users/Steve/Desktop/scenarioSA.csv")
 plot_ly(x=short3$LSCOOption, y=short3$CRLCOOption, z=short3$MESCDOption, type="scatter3d", mode="markers", 
         color=short3$Armor)
+

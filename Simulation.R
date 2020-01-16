@@ -27,25 +27,16 @@ iraq_meanattacks <- mean(df_iraqattacks$iraq_attackspervehicle)
 
 ####Plot Attacks per Vehicle####
 ggplot(df_iraqattacks, aes(x = as.Date(iraq_dates), y = iraq_attackspervehicle)) + 
-  geom_line() + 
-  geom_hline(yintercept = iraq_meanattacks, color = "red", linetype = 2, alpha = .5) + 
+  geom_line(size = 1) + 
+  geom_hline(yintercept = iraq_meanattacks, color = "red", linetype = 2, size = 1) + 
   annotate("text", x = as.Date("2007/11/15"), y = .12, label = "Attacks/Vehicle") + 
-  annotate("text", x = as.Date("2005/8/15"), y = .09, label = "Mean Attacks/Vehicle = .0842", color = "red") +
+  annotate("text", x = as.Date("2005/8/15"), y = .09, label = "Mean = .084", color = "red") +
   #ggtitle('Iraq (2/2005 to 7/2008) - Attacks per Vehicle') + 
   theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5)) + 
-  labs(x = "Month", y = "Attacks per Vehicle", face = "bold") + 
+  labs(x = "Date", y = "Attacks per Vehicle", face = "bold") + 
   theme(legend.position="none") + 
-  scale_color_grey(end = .5) + 
-  theme(
-    panel.background = element_blank(),
-    # Hide panel borders and remove grid lines
-    panel.border = element_blank(),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    # Change axis line
-    axis.line = element_line(colour = "black")
-  )
-
+  ylim(0, .2) +
+  scale_color_grey(end = .5) 
 
 #Predictors
 iraq_Xtminus1 <- c(0.047, 0.051, 0.052,0.056,0.057,0.064,0.065,0.071,0.066,0.061,0.063,0.075,0.074,0.084,0.082,0.095,0.107,0.108,0.129,0.127,0.132,0.129,0.132,0.140,0.129,0.140,0.131,0.134,0.124,0.106,0.104,0.076,0.056,0.043,0.042,0.043,0.041,0.044,0.043)
